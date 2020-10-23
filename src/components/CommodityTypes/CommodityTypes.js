@@ -45,8 +45,6 @@ class CommodityTypes extends React.Component {
           this.props
             .getCommodityTypes({ limit: 20, offset: 0 })
             .then(() => {
-              // console.log(this.props.commodityTypes);
-
               const {
                 count,
                 total_count,
