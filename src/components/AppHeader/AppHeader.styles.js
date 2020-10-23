@@ -1,6 +1,7 @@
 export default () => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    marginBottom: '70px'
   },
   title: {
     flexGrow: 1,

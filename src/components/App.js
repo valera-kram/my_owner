@@ -10,7 +10,6 @@ import history from "../history";
 const App = () => {
   return (
     <div className="ui container">
-      {/* <BrowserRouter history={history}> */}
       <Router history={history}>
         <div>
           <Switch>
@@ -21,7 +20,6 @@ const App = () => {
           </Switch>
         </div>
         </Router>
-       {/* </BrowserRouter> */}
     </div>
   );
 };

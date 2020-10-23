@@ -205,12 +205,6 @@ class CommodityTypes extends React.Component {
     return (
       <div>
         <AppHeader />
-        <hr />
-        <hr />
-        <hr />
-        <hr />
-        <hr />
-        <hr />
         {data && (
           <CommodityTypesTable
             rows={data}

@@ -9,7 +9,6 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import { Button } from "@material-ui/core";
 
-
 export default function CommodityTypesTable(props) {
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
@@ -26,9 +25,18 @@ export default function CommodityTypesTable(props) {
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell key={"name"} align={"left"} style={{ minWidth: 200 }}>
+              <TableCell key={"name"} align={"left"} style={{ fontSize: '25px' }}>
                 Types of Commodity
-              <Button style={{float: 'right'}} variant="contained" color="primary" onClick={() => { props.onCreateClick() }}>Create</Button>
+                <Button
+                  style={{ float: "right" }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    props.onCreateClick();
+                  }}
+                >
+                  Create
+                </Button>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -39,15 +47,19 @@ export default function CommodityTypesTable(props) {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.id}
-                    >
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                       <TableCell key={row.id}>
                         {row.name}
-                        <Button style={{float: 'right'}} variant='outlined' color="primary" onClick={() => { onEditClick(row.id, row.name) }}>edit</Button>
+                        <Button
+                          style={{ float: "right" }}
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            onEditClick(row.id, row.name);
+                          }}
+                        >
+                          edit
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
@@ -65,4 +77,4 @@ export default function CommodityTypesTable(props) {
       />
     </Paper>
   );
-}
+};

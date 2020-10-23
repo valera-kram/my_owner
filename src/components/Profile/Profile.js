@@ -63,7 +63,6 @@ class Profile extends React.Component {
           <Button
             variant="contained"
             color="primary"
-            // disabled={loading}
             onClick={()=>{
               history.push('/commodity_types')
             }}
@@ -76,13 +75,11 @@ class Profile extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
-
     return (
       <>
         <AppHeader />
         <Box pl={5} pr={10} pt={4} pb={5}>
-          <Typography variant="h3" className={classes.header}>
+          <Typography variant="h3">
             Your profile!
           </Typography>
           {this.props.profile.manager.id && this.renderProfile()}
