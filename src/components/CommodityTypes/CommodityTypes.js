@@ -17,7 +17,7 @@ import {
 } from "../../actions/modalsAction";
 
 import AppHeader from "../AppHeader/AppHeader";
-import CommodityTypesTable from "./CommodityTypesTable";
+import CommodityTypesTable from "../Common/Table";
 import CommodityTypesModal from "./CommodityTypesModal";
 
 class CommodityTypes extends React.Component {
@@ -25,11 +25,6 @@ class CommodityTypes extends React.Component {
     super(props);
 
     this.state = {
-      data: [],
-      total_count: 0,
-      count: 0,
-      limit: 0,
-      offset: 0,
       commodityType: {
         id: null,
         name: null,
@@ -43,27 +38,7 @@ class CommodityTypes extends React.Component {
       .then((current_session) => {
         if (current_session.token) {
           this.props
-            .getCommodityTypes({ limit: 20, offset: 0 })
-            .then(() => {
-              const {
-                count,
-                total_count,
-                offset,
-                limit,
-              } = this.props.commodityTypes.pagination;
-
-              this.setState({
-                data: this.props.commodityTypes.data,
-                total_count: total_count,
-                count: count,
-                limit: limit,
-                offset: offset,
-              });
-
-              if (this.state.total_count > this.state.count) {
-                this.loadMoreData(this.state.data);
-              }
-            })
+            .getCommodityTypes({ limit: 10, offset: 0 })
             .catch((error) => {
               this.props.setError(error).then(() => {
                 if (this.props.error.type === "access_token_invalid") {
@@ -84,104 +59,59 @@ class CommodityTypes extends React.Component {
       });
   };
 
-  loadMoreData = (current_data) => {
-    const { limit, offset } = this.state;
+  onNextPage = (newPage) => {
+    const { limit, offset, count, total_count } = this.props.commodityTypes.pagination;
 
-    this.props
-      .getCommodityTypes({ limit: 20, offset: limit + offset })
-      .then(() => {
-        const new_data = current_data.concat(this.props.commodityTypes.data);
-
-        this.setState({
-          data: new_data,
-          count: offset + this.props.commodityTypes.pagination.count,
-        });
-      });
-  };
+    if ((newPage + 1) * 10 > count && count !== total_count)
+      this.props.getCommodityTypes({ limit: 10, offset: limit + offset })
+  }
 
   onEditClick = (id, name) => {
-    this.props.openCommodityTypeModal();
-
     this.setState({
       commodityType: {
         id: id,
         name: name,
-      },
-    });
+      }
+    })
+
+    this.props.openCommodityTypeModal();
+    
   };
 
   onModalCloseClick = () => {
-    this.props.closeCommodityTypeModal();
-
     this.setState({
       commodityType: {
         id: null,
         name: null,
       },
-    });
+    }, this.props.closeCommodityTypeModal)
   };
 
   onConfirmClick = ({ id, name }) => {
+    const { createCommodityType, updateCommodityType } = this.props;
+
     {
-      id &&
-        name &&
-        this.props
-          .updateCommodityType({ id, commodity_type: { name: name } })
-          .then(() => {
-            let data = this.state.data;
-            let new_data = [];
-            data.map((pair) => {
-              if (pair.id !== id) {
-                new_data.push(pair);
-              } else {
-                new_data.push({ id, name });
-              }
-            });
-            this.setState({
-              data: new_data,
-            });
-          });
+      id && name && updateCommodityType({ id, commodity_type: { name: name } })
     }
 
     {
-      !id &&
-        name &&
-        this.props
-          .createCommodityType({ commodity_type: { name: name } })
-          .then(() => {
-            let new_data = this.state.data;
-            let new_total_count = this.state.total_count + 1;
-            new_data.push(this.props.commodityTypes.data);
-            this.setState({
-              data: new_data,
-              total_count: new_total_count,
-            });
-          });
+      !id && name && createCommodityType({ commodity_type: { name: name } })
     }
 
-    this.props.closeCommodityTypeModal();
+    this.onModalCloseClick();
   };
 
   onDeleteClick = (id) => {
-    this.props.deleteCommodityType(id).then(() => {
-      let data = this.state.data;
-      let new_data = [];
+    const { commodityTypes, getCommodityTypes, deleteCommodityType, closeCommodityTypeModal } = this.props;
 
-      data.map((pair) => {
-        if (pair.id !== id) {
-          new_data.push(pair);
-        }
-      });
+    const { limit, offset, count, total_count } = commodityTypes.pagination;
 
-      let new_total_count = this.state.total_count - 1;
+    deleteCommodityType(id).then(() => {
+      if (total_count > count)
+        getCommodityTypes({ limit: 1, offset: limit + offset })
+    })
 
-      this.setState({
-        data: new_data,
-        total_count: new_total_count,
-      });
-    });
-
-    this.props.closeCommodityTypeModal();
+    closeCommodityTypeModal();
   };
 
   onCreateClick = () => {
@@ -196,7 +126,7 @@ class CommodityTypes extends React.Component {
   };
 
   render() {
-    const { data, total_count } = this.state;
+    const { data, pagination } = this.props.commodityTypes;
     const { commodityTypeModal } = this.props;
     const { id, name } = this.state.commodityType;
 
@@ -206,9 +136,10 @@ class CommodityTypes extends React.Component {
         {data && (
           <CommodityTypesTable
             rows={data}
-            total_count={total_count}
+            total_count={pagination.total_count}
             onEditClick={this.onEditClick}
             onCreateClick={this.onCreateClick}
+            onNextPage={this.onNextPage}
           />
         )}
         <CommodityTypesModal

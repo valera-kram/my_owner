@@ -1,13 +1,16 @@
-import { createSessionRoutine, deleteSessionRoutine } from "./index";
-import axios from "axios";
-import history from "../history";
+import axios from "../apis";
 import { sessionService } from "redux-react-session";
+
+import history from "../history";
+
+import { createSessionRoutine, deleteSessionRoutine } from "./index";
+
 
 export const createSession = ({ username, password }) => async (dispatch) => {
   dispatch(createSessionRoutine.request({ username, password }));
   try {
     const response = await axios.post(
-      "https://staging.ownerapp.ai/manager/sessions",
+      "/manager/sessions",
       {
         username,
         password,
@@ -34,7 +37,7 @@ export const deleteSession = () => async (dispatch) => {
   try {
     const currentSession = await sessionService.loadSession();
     const response = await axios.delete(
-      "https://staging.ownerapp.ai/manager/sessions",
+      "/manager/sessions",
       {
         params: {
           access_token: currentSession.token,

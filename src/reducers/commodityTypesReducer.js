@@ -1,4 +1,4 @@
-import _map from "lodash/map";
+import _filter from 'lodash/filter';
 
 import {
   getCommodityTypesRoutine,
@@ -10,7 +10,7 @@ import {
 const initialState = {
   data: [],
   pagination: {
-    limit: 0, 
+    limit: 0,
     offset: 0,
     count: 0,
     total_count: 0
@@ -19,36 +19,39 @@ const initialState = {
 
 export default (state = initialState, action) => {
   if (getCommodityTypesRoutine.isSuccessAction(action)) {
-    const { commodity_types } = action.payload.data;
+    const { commodity_types, pagination } = action.payload.data;
 
-    const data = _map(commodity_types, (commodity_type) => ({
-      id: commodity_type.id,
-      name: commodity_type.name,
-    }));
+    const data = state.data.concat(commodity_types);
 
-    const { limit, offset, count, total_count } = action.payload.data.pagination;
-
-    const pagination = {
-      limit,
-      offset,
-      count: offset+count, 
-      total_count 
-    }
-
-    return { ...state, data, pagination };
+    return { ...state, data, pagination: { ...pagination, count: state.pagination.count + pagination.count } };
   }
   if (createCommodityTypeRoutine.isSuccessAction(action)) {
-    console.log(action.payload)
     const { commodity_type } = action.payload.data
+    const data = state.data.concat(commodity_type);
 
-    return { ...state, data: commodity_type }
+    return { ...state, data, pagination: { ...state.pagination, total_count: state.pagination.total_count + 1, count: state.pagination.count + 1 } }
   }
 
-  if(updateCommodityTypeRoutine.isSuccessAction(action)) {
-    return state;
+  if (updateCommodityTypeRoutine.isSuccessAction(action)) {
+    const { id, name } = action.payload.commodity_type;
+
+    let data = state.data.map((pair) => {
+      if (pair.id !== id)
+        return pair;
+      else
+        return { id, name };
+    })
+
+    return { ...state, data };
   }
-  if(deleteCommodityTypeRoutine.isSuccessAction(action)) {
-    return state;
+  if (deleteCommodityTypeRoutine.isSuccessAction(action)) {
+    const { id } = action.payload;
+
+    let data = _filter(state.data, (pair) => {
+      return pair.id !== id
+    })
+
+    return { ...state, data, pagination: { ...state.pagination, total_count: state.pagination.total_count - 1, count: state.pagination.count - 1 } };
   }
   return state;
-};
+}
