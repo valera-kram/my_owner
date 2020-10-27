@@ -39,7 +39,7 @@ class CustomTable extends React.Component {
             <TableHead>
               <TableRow>
                 <TableCell key={"name"} align={"left"} style={{ fontSize: '25px' }}>
-                  Types of Commodity
+                  {this.props.name}
                 <Button
                     style={{ float: "right" }}
                     variant="contained"

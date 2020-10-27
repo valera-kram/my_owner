@@ -135,6 +135,7 @@ class CommodityTypes extends React.Component {
         <AppHeader />
         {data && (
           <CommodityTypesTable
+            name='Types of Commodity'
             rows={data}
             total_count={pagination.total_count}
             onEditClick={this.onEditClick}
