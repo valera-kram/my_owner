@@ -24,10 +24,17 @@ class CommodityTypesModal extends React.Component {
     const { name } = this.state;
     let hasError = false;
 
-    if(!name.value) {
-      this.setState({
-        name: { ...name, error: "Name can't be blank!" },
-      });
+    if (!name.value) {
+      if (!name.error || name.error === 'Enter new type!') {
+        this.setState({
+          name: { ...name, error: "Enter new type!" },
+        });
+      }
+      else {
+        this.setState({
+          name: { ...name, error: "Name can't be blank!" },
+        });
+      }
       hasError = true;
     }
     if (name.value && name.value.trim().length <= 2) {
@@ -48,9 +55,17 @@ class CommodityTypesModal extends React.Component {
       this.props.onConfirmClick({
         id: this.props.id,
         name: name.value,
-      });
-    }
-  };
+      })
+
+
+      this.setState({
+        name: {
+          value: null,
+          error: null,
+        }
+      })
+    };
+  }
 
   render() {
     const { name } = this.state;
@@ -88,12 +103,19 @@ class CommodityTypesModal extends React.Component {
                 this.setState({ name: { ...name, value } });
               }}
             />
-            {!!name.error && <FormHelperText style={{color: 'red'}}>{name.error}</FormHelperText>}
+            {!!name.error && <FormHelperText style={{ color: 'red' }}>{name.error}</FormHelperText>}
           </DialogContent>
           <DialogActions>
             <Button
               onClick={() => {
                 this.props.onCloseClick();
+
+                this.setState({
+                  name: {
+                    value: null,
+                    error: null,
+                  }
+                })
               }}
               color="primary"
             >
